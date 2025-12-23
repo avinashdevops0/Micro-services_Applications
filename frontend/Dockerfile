@@ -1,4 +1,4 @@
-FROM nginx-alpine:latest
+FROM nginx:mainline-alpine3.23-perl
 COPY . /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
