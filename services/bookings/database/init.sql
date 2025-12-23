@@ -39,3 +39,8 @@ INSERT INTO bookings (user_id, hotel_id, room_id, check_in, check_out, guests, t
 (1, 3, 6, DATE_SUB(CURDATE(), INTERVAL 30 DAY), DATE_SUB(CURDATE(), INTERVAL 27 DAY), 2, 599.97, 'completed'),
 (3, 4, 8, DATE_ADD(CURDATE(), INTERVAL 21 DAY), DATE_ADD(CURDATE(), INTERVAL 23 DAY), 2, 299.98, 'pending'),
 (2, 5, 9, DATE_ADD(CURDATE(), INTERVAL 35 DAY), DATE_ADD(CURDATE(), INTERVAL 38 DAY), 2, 1049.97, 'confirmed');
+
+-- Create user and grant privileges
+CREATE USER 'root'@'%' IDENTIFIED BY 'rootpassword';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
+FLUSH PRIVILEGES;

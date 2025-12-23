@@ -1,0 +1,57 @@
+pipeline {
+    agent any 
+    stages {
+        stage ("Clean workspace") {
+            steps {
+                cleanWs()
+            }
+        }
+    stage ("code") {
+        steps {
+            git branch: 'node', 
+                    url: 'https://github.com/avinashdevops0/Micro-services_Applications.git'
+        }
+    }
+    stage ("Build Frontend Image") {
+        steps {
+            sh "docker build -t frontend:latest ./frontend"
+        }
+    }
+    stage ("Run Frontend Container") {
+        steps {
+            sh "docker create network microservices || true"
+            sh "docker rm -f frontend || true"
+            sh "docker run -d -p 80:80 --name frontend --network microservices frontend:latest"
+            sh "docker ps -a"
+        }
+
+    }
+    stage ("Build API-Gateway Image") {
+        steps {
+            sh "docker build -t api-gateway:latest ./api-gateway"
+        }
+    }
+    stage ("Run API-Gateway Container") {
+        steps {
+            sh "docker rm -f api-gateway || true"
+            sh "docker run -d -p 80:80 --name api-gateway --network microservices api-gateway:latest"
+            sh "docker ps -a"
+        }
+
+    }
+//    stage ("Build Booking Image") {
+//         steps {
+//             sh "docker build -t booking:latest ./booking"
+//         }
+
+//     }
+//     stage ("Run Booking Container") {
+//         steps {
+//             sh "docker rm -f booking || true"
+//             sh "docker run -d -p 3001:3001 --name bookings-service --network microservices booking:latest"
+//             sh "docker ps -a"
+//         }
+
+//     }
+    }
+}
