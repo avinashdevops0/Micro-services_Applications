@@ -12,46 +12,44 @@ pipeline {
                     url: 'https://github.com/avinashdevops0/Micro-services_Applications.git'
         }
     }
-    stage ("Build Frontend Image") {
+    stage ("Build Images") {
         steps {
-            sh "docker build -t frontend:latest ./frontend"
+            sh "docker build -t -n api-gateway-image:latest ./api-gateway"
+            sh "docker build -t frontend-image:latest ./frontend"
+            sh "docker build -t database-image-bookings:latest ./services/bookings/database"
+            sh "docker build -t bookings-image:latest ./services/bookings"
         }
     }
-    stage ("Run Frontend Container") {
+    stage ("Removing containers") {
         steps {
-            sh "docker create network microservices || true"
             sh "docker rm -f frontend || true"
-            sh "docker run -d -p 80:80 --name frontend --network microservices frontend:latest"
-            sh "docker ps -a"
-        }
-
-    }
-    stage ("Build API-Gateway Image") {
-        steps {
-            sh "docker build -t api-gateway:latest ./api-gateway"
-        }
-    }
-    stage ("Run API-Gateway Container") {
-        steps {
             sh "docker rm -f api-gateway || true"
-            sh "docker run -d -p 80:80 --name api-gateway --network microservices api-gateway:latest"
-            sh "docker ps -a"
+            sh "docker rm -f bookingsdb || true"
+            sh "docker rm -f bookings-service || true"
         }
-
     }
-//    stage ("Build Booking Image") {
-//         steps {
-//             sh "docker build -t booking:latest ./booking"
-//         }
+    stage ("Creating network") {
+        steps {
+            sh "docker network create microservices || true"
+        }
+    }
 
-//     }
-//     stage ("Run Booking Container") {
-//         steps {
-//             sh "docker rm -f booking || true"
-//             sh "docker run -d -p 3001:3001 --name bookings-service --network microservices booking:latest"
-//             sh "docker ps -a"
-//         }
+    stage ("Running containers") {
+        steps {
+            sh "docker run -d --name api-gateway --network microservices api-gateway-image:latest"
+            sh "sleep 5"
+            sh "docker run -d -p 80:80 --name frontend --network microservices frontend-image:latest"
+            sh "sleep 5"
+            sh "docker run -itd --name bookingsdb --network microservices database-image-bookings:latest"
+            sh "sleep 5"
+            sh "docker run -itd --name bookings-service --network microservices bookings-image:latest"
 
-//     }
+        }
+    }
+    stage (" clean up") {
+        steps {
+            sh "docker image prune -f"
+        }
+    }
     }
 }
