@@ -24,7 +24,7 @@ pipeline {
         steps {
             sh "docker rm -f frontend || true"
             sh "docker rm -f api-gateway || true"
-            sh "docker rm -f bookingsdb || true"
+            sh "docker rm -f bookings-db || true"
             sh "docker rm -f bookings-service || true"
         }
     }
@@ -40,7 +40,7 @@ pipeline {
             sh "sleep 5"
             sh "docker run -d -p 80:80 --name frontend --network microservices frontend-image:latest"
             sh "sleep 5"
-            sh "docker run -itd --name bookingsdb --network microservices database-image-bookings:latest"
+            sh "docker run -itd --name bookings-db --network microservices database-image-bookings:latest"
             sh "sleep 5"
             sh "docker run -itd --name bookings-service --network microservices bookings-image:latest"
 
